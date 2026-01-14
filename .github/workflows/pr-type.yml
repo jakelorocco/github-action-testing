@@ -7,6 +7,7 @@ on:
 jobs:
   update-pr-body:
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.pull_request.body, 'mellea-pr-edited-marker') }}
     permissions:
       pull-requests: write
       contents: read
@@ -30,11 +31,15 @@ jobs:
             PR_TYPE="documentation"
           fi
 
+          if [ -z "$PR_TYPE" ]; then
+            echo "::error::No PR type selected. Please check one of: Bug fix, Feature, or Documentation."
+            exit 1
+          fi
+
           echo "pr_type=$PR_TYPE" >> "$GITHUB_OUTPUT"
           echo "Detected PR type: $PR_TYPE"
 
       - name: Update PR body with checklist
-        if: steps.detect-type.outputs.pr_type != '' && !contains(github.event.pull_request.body, 'mellea-pr-edited-marker')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_BODY: ${{ github.event.pull_request.body }}
@@ -49,7 +54,3 @@ jobs:
           else
             echo "Template file not found: $TEMPLATE_FILE"
           fi
-    
-# TODO: JAL. Can include a check that it's the modified PR with the check.
-# TODO: JAL. Can update after the fact as well... and fail with some message about nothing selected...
-#       -> if so, need to trigger on update or something like that...
