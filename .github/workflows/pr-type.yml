@@ -1,4 +1,4 @@
-name: PR Comment Bot
+name: PR Bot
 
 on:
   pull_request_target:
@@ -59,3 +59,16 @@ jobs:
           else
             echo "Template file not found: $TEMPLATE_FILE"
           fi
+
+      - name: Comment on PR
+        uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc
+        with:
+          message: |
+            The PR description has been updated with a checklist based on your selected PR type.
+
+            Please fill out the checklist in the PR description above.
+
+# TODO: JAL. Need to add a misc / default category.
+# TODO: JAL. remove anything but the checkboxes and an explanation from the default template until so that people don't get mistaken.
+# TODO: JAL. add a new comment when the PR body is updated.
+# remove checklists from the templates and just have TODOs...
